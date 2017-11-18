@@ -1,0 +1,53 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+\title{Implementation of a Fuzzy Rule-Based Classifier using Genetic Algorithms}
+\author{Rashed,David,Joseph}
+\maketitle
+%\pagestyle{headings}
+
+
+This work is an attempt to implement the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) \\
+The Iris data is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width. \\
+For each of these attributes $x_{i}(i=1\cdots n)$ there is three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
+Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use that function to express that not all parameters are needed in a rule.
+Thus we can generalise rules as follow :
+
+\[if \left( [x_{p(1)}=\bigcup_{j\in D(1)}A(p(1),j) ] \bigcap\cdots\bigcap[x_{p(s)}=\bigcup_{j\in D(s)}A(p(s),j) ] \right) then \quad \bigcup_{i=0}^3C_i\]
+
+With $D(i)\subset\{Small,Medium,Large\}$, and $C_i$ the confidence for $Class_i$. \\
+$\bigcup$ corresponds to \textbf{or} and $\bigcap$ to \textbf{and}.\\
+So for exemple, if:
+\[D(1)=\{Small\},D(2)=\{Medium,Big\},D(3)=\{\},D(4)=\{Small,Medium,Big\}\]
+Then our rule would read as:
+\begin{center}If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big, then C1 or C2 or C3 or C4.\end{center} 
+There is 12 different membership functions that can be present or not in a rule. If all the functions are absent from the rule, we have an empty fuzzy set for the condition part, which is an invalid rule.\\
+Thus there is $2^{12}-1=4095$ possible rules. The number of rules is exponentially increasing with the number of parameters and linguistic variables. We could have think to encode the resulting class in our rule, but it would have increase the search space. \\ 
+\\
+Xiong \& Litz proposed a way to compute the classes using the antecedant and the data set: \\
+\\
+A rule can be summarised as \textit{If A then B, or $A\Rightarrow B$}.\\
+$B\in \{Class_1,Class_2,Class_3,Class_4\}$\\
+\[A=[x_{p(1)}=\bigcup_{j\in D(1)}A(p(1),j) ] \bigcap\cdots\bigcap[x_{p(s)}=\bigcup_{j\in D(s)}A(p(s),j)]\]
+With $\mu_A(u_i)$ the membership value of an item $u_i(i=1\cdots m)$ from the training set $U_t=\{u_1,\cdots ,u_m\}$ to A.
+%This time B is not C1 or C2.... Should we change ?
+The consequent B is a crisp subset which defines as follow:
+\[\mu_B(u_i)=
+\begin{cases}
+	1 & \text{if $class(u_i)=B$}\\
+	0 & \text{otherwise}
+\end{cases}\]
+\\
+$A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B will be used to compute the truth value of a rule to each class:
+\[
+	truth(A\Rightarrow B)=
+	\frac{M(A\cap B)}{M(A)}=
+	\frac
+		{\sum\limits_{u_i\in U_T}{(\mu_A(u_i)\land \mu_B(u_i))}}
+		{\sum\limits_{u_i\in U_T}{\mu_A(u_i)}}=
+	\frac
+		{\sum\limits_{class(u_i)=B}{\mu_A(u_i)}}
+		{\sum\limits_{u_i\in U_T}{\mu_A(u_i)}}
+\]
+Using this formula, we can find 
+\end{document}
