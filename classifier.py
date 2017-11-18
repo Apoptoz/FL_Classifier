@@ -106,7 +106,7 @@ def getCompetitionStrength(rule):
     for classNumber in range(3):
         muArrays = getMuArrays(classNumber)
 
-        competitionStrength[classNumber] = sum( [ np.dot(muArrays[i],rule) for i in range(len(muArrays)) ] )
+        competitionStrength[classNumber] = sum( [ getMuA(muArrays[i],rule) for i in range(len(muArrays)) ] )
 
     return competitionStrength
 
@@ -117,8 +117,16 @@ def getTruth(rule):
     sumComp = sum(competitionStrength)
     return [competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]
 
-               
-               
+
+#Compute µ_a given a u_i and a rule
+def getMuA(muArray,rule):
+
+    #Multiply the muArray with the rule to "eliminate" the unused fuzzy sets
+    muValues = [muArray[i]*rule[i] for i in range(12)]
+    #Then, make an array for all the max membership values of each parameters
+    #And take the min of that array
+    muA = min( [ max(muValues[i:i+3]) for i in [0,3,6,9] ] )
+    return muA
                
 
 #We might prefer to preprocess muArray for all elements
@@ -131,9 +139,6 @@ def getClassFromRule(rule):
     for classNumber in range(3):
         classArray = data.getClassArray(classNumber)
         competitionStrength[classNumber] += np.dot(classArray,rule)
-        #Idée : créer array de 12
-        # µs(x1),µm(x1)...,µl(xm)
-        # Produit scalaire avec rule
     maxIndex = getMaxIndex(competitionStrength)
     print("The class of this rule is class " + str(maxIndex) + \
           " with a score of: " + str(competitionStrength[maxIndex]))
@@ -152,6 +157,12 @@ def getMaxIndex(l):
                 index = i
         return index
 
+
+
+###IMPLEMENTATION###
+#It would be better to preprocess all the muArrays from the training data,
+#And to label them with their class
+#So we can use panda to take each and not recalculate them
 #Return an array of all values returned by membership functions
 def getMuArray(row):
     muArray = []
