@@ -25,11 +25,8 @@ class Indiv:
         return s
 		
     def getFitness(self):
-        sumRul = 0
-        for i in range(classifier.nbRules):
-            sumRul += sum(self.rules[i])
-            # sum([sum(el) for el in self.rules]
-        return sumRul
+        inferences = classifier.infer(self.rules)
+        return classifier.computeFitness(inferences)
    
 class Population:
 
@@ -47,14 +44,11 @@ class Population:
       nb_max = self.listpop[0].getFitness()
       index = 0
       
-      for i in range(len(self.listpop)):
-        if self.listpop[i].getFitness() > nb_max:
-            
-            nb_max = self.listpop[i].getFitness()
-         
-            index = i 
-          
-          
+      for i in range(1,len(self.listpop)):
+          nextFitness = self.listpop[i].getFitness()
+          if nextFitness > nb_max:
+            nb_max = nextFitness         
+            index = i      
       return self.listpop[index]
       
       
@@ -118,28 +112,25 @@ def mutation(indiv):
          if   prob < mutProb:
              indiv.rules[i][j] = 1 - indiv.rules[i][j]
             
+if __name__ == '__main__':
+             
+    pop = Population(True)
 
-pop = Population(True)
 
+    for i in range(20):
 
-for i in range(200):
-
-   newpop = Population(False)
+        newpop = Population(False)
    
-   for j in range(popSize):
-   
-      parent1 = tournament(pop)
-      parent2 = tournament(pop)
+        for j in range(popSize):
+       
+            parent1 = tournament(pop)
+            parent2 = tournament(pop)
       
-      child = crossOver(parent1,parent2)
-      newpop.listpop.append(child)
+            child = crossOver(parent1,parent2)
+            newpop.listpop.append(child)
       
-   for j in range(popSize):
-       mutation(newpop.listpop[j])
-      
-   pop = newpop
-
-   
-
-
-print(pop.getFittest()) 
+        for j in range(popSize):
+            mutation(newpop.listpop[j])
+       
+        pop = newpop
+        print(pop.getFittest()) 

@@ -10,6 +10,7 @@ tournamentSize = 5
 elitism = True
 ######################
 
+WEIGHT_ERROR = 0.2
 
 alpha_cut = 0
 
@@ -115,7 +116,10 @@ def getCompetitionStrength(rule):
 def getTruth(rule):
     competitionStrength = getCompetitionStrength(rule)
     sumComp = sum(competitionStrength)
-    return [competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]
+    if sumComp == 0:
+        return [0,0,0]
+    else:
+        return [competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]
 
 
 #Compute µ_a given a u_i and a rule
@@ -181,7 +185,7 @@ def getMuArray(row):
 # Returns list of lists of the three strengths of memberships to classes 1, 2 and 3
 # Where class1 is at index 0, class2 at index 1, and class3 at index 2 of each list
 
-def infer(rules, data):
+def infer(rules):
     class1 = []
     class2 = []
     class3 = []
@@ -189,12 +193,17 @@ def infer(rules, data):
     classes = [class1, class2, class3]
     inferences = []
 
-    for datum in data:
+    for index,datum in data.X_test.iterrows():
         for rule in rules:
+            inferred = applyRule(rule, datum)
             confidences = getTruth(rule)
+            print("hey")
             for i in range(0, len(confidences)):
-                inferred = applyRule(rule, confidences[i], datum)
-                classes[i].append(inferred)
+                print("ho")
+                #nferred = confidences[i]*getMuA(getMuArray(datum),rule)
+                classes[i].append(inferred*confidences[i])
+        print("Next data")
+        
         class1_inferred = reduce(lambda x, y: x + y, classes[0]) / len(classes[0])
         class2_inferred = reduce(lambda x, y: x + y, classes[1]) / len(classes[1])
         class3_inferred = reduce(lambda x, y: x + y, classes[2]) / len(classes[2])
@@ -211,7 +220,17 @@ def infer(rules, data):
     return inferences
 
 
-def applyRule(rule, confidence, data):
+def computeFitness(inferences):
+    print("ComputeFit")
+    fitDatum = []
+    for i in range(len(inferences)):
+        fitValue = inferences[i].pop(data.y_train.iloc[i])-WEIGHT_ERROR*(sum(inferences[i]))
+        fitDatum.append(fitValue)
+    return sum(fitDatum)
+                                                    
+
+
+def applyRule(rule, data):
     ruleCounter = 0
     calcedRuleArray = []
     for x in range(0, len(data)):
@@ -230,5 +249,16 @@ def applyRule(rule, confidence, data):
         calcedRuleArray.append(max(small, medium, large))
         ruleCounter += 3
     calcedRule = min(calcedRuleArray[0], calcedRuleArray[1], calcedRuleArray[2])
-    finalInference = calcedRule * confidence
+    finalInference = calcedRule
     return finalInference
+
+
+# We wanted to use 3confidences per rule to compute data, then have some kind of average for each class. But that seems to take too much time.
+# So we will try to only take the class corresponding to the max confidence, and compute the accuracy.
+# We kind of lose the fuzziness
+
+
+# For each rule compute the truth value, take the max class.
+# Infer with the data, get a new confidence for that class.
+# Average for each class, add the confidence of the correct answer to fitness
+# YAY

@@ -28,3 +28,7 @@ def getClassArray(classNumber):
     listOfInstancesIndex = y_train.index[y_train==classNumber].tolist()
 
     return X_train.iloc[listOfInstancesIndex,:]
+
+
+# MAYBE WE NEED TWO TEST DATA, ONE FOR THE VERY END TO COMPUTE ACCURACY
+# THAT W WILL BE SURE HAS NOT BEEN USED TO COMPUTE OUR INDIV
