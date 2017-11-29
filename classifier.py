@@ -18,6 +18,10 @@ nbRules = 10
 
 
 
+truthCache = {}
+inferenceCache = {}
+
+
 
 #Class who can compute Triangle functions
 #We might need to edit it to enter a mid point
@@ -114,13 +118,19 @@ def getCompetitionStrength(rule):
 
 
 def getTruth(rule):
+    ruleString = str(rule)
+    if ruleString in truthCache:
+        return truthCache[ruleString] 
+
     competitionStrength = getCompetitionStrength(rule)
     sumComp = sum(competitionStrength)
     if sumComp == 0:
-        return [0,0,0]
+        truthCache[ruleString] = [0,0]
+        return [0,0]
     else:
-        return [competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]
-
+        index, value = max(enumerate([competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]), key = lambda e: e[1])
+        truthCache[ruleString] = [index, value]
+        return [index, value]
 
 #Compute µ_a given a u_i and a rule
 def getMuA(muArray,rule):
@@ -195,19 +205,29 @@ def infer(rules):
 
     for index,datum in data.X_test.iterrows():
         for rule in rules:
-            inferred = applyRule(rule, datum)
-            confidences = getTruth(rule)
-            print("hey")
-            for i in range(0, len(confidences)):
-                print("ho")
-                #nferred = confidences[i]*getMuA(getMuArray(datum),rule)
-                classes[i].append(inferred*confidences[i])
-        print("Next data")
+            ruleString = str(rule)
+            if ruleString not in inferenceCache:
+                inferenceCache[ruleString] = applyRule(rule, datum)
+            inferred = inferenceCache[ruleString]
+            confidence = getTruth(rule)
+            #nferred = confidences[i]*getMuA(getMuArray(datum),rule)
+            classes[confidence[0]].append(inferred*confidence[1])
         
-        class1_inferred = reduce(lambda x, y: x + y, classes[0]) / len(classes[0])
-        class2_inferred = reduce(lambda x, y: x + y, classes[1]) / len(classes[1])
-        class3_inferred = reduce(lambda x, y: x + y, classes[2]) / len(classes[2])
-        inferences.append([class1_inferred, class2_inferred, class3_inferred]) 
+        if class1:
+            class1_inferred = reduce(lambda x, y: x + y, classes[0]) / len(classes[0])
+        else:
+            class1_inferred = 0
+        if class2:
+            class2_inferred = reduce(lambda x, y: x + y, classes[1]) / len(classes[1])
+        else:
+            class2_inferred = 0
+        if class3:
+            class3_inferred = reduce(lambda x, y: x + y, classes[2]) / len(classes[2])
+        else:
+            class3_inferred = 0
+
+        l = [class1_inferred, class2_inferred, class3_inferred]
+        inferences.append(l[data.y_train.iloc[index]]) 
         class1 = []
         class2 = []
         class3 = []
@@ -223,9 +243,8 @@ def infer(rules):
 def computeFitness(inferences):
     print("ComputeFit")
     fitDatum = []
-    for i in range(len(inferences)):
-        fitValue = inferences[i].pop(data.y_train.iloc[i])-WEIGHT_ERROR*(sum(inferences[i]))
-        fitDatum.append(fitValue)
+    for confidence in inferences:
+        fitDatum.append(confidence)
     return sum(fitDatum)
                                                     
 
@@ -262,3 +281,9 @@ def applyRule(rule, data):
 # Infer with the data, get a new confidence for that class.
 # Average for each class, add the confidence of the correct answer to fitness
 # YAY
+
+
+# change getTruth to only return the max of the three along with the class index
+# change infer apporpriately.
+# compare to true values (y_test), make array of the calculated confidences for all those
+# sum them to get Fitness value
