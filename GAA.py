@@ -133,4 +133,7 @@ if __name__ == '__main__':
             mutation(newpop.listpop[j])
        
         pop = newpop
-        print(pop.getFittest()) 
+        thisFittest = pop.getFittest()
+        print(thisFittest)
+        inferencesForAccuracy = classifier.infer(thisFittest.rules, True)
+        classifier.getAccuracy(inferencesForAccuracy)

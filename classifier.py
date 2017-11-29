@@ -195,7 +195,7 @@ def getMuArray(row):
 # Returns list of lists of the three strengths of memberships to classes 1, 2 and 3
 # Where class1 is at index 0, class2 at index 1, and class3 at index 2 of each list
 
-def infer(rules):
+def infer(rules, forAccuracy = False):
     class1 = []
     class2 = []
     class3 = []
@@ -227,7 +227,11 @@ def infer(rules):
             class3_inferred = 0
 
         l = [class1_inferred, class2_inferred, class3_inferred]
-        inferences.append(l[data.y_train.iloc[index]]) 
+
+        if forAccuracy:
+            inferences.append(l)
+        else:
+            inferences.append(l[data.y_train.iloc[index]]) 
         class1 = []
         class2 = []
         class3 = []
@@ -238,6 +242,21 @@ def infer(rules):
     #    index, value = max(enumerate(inference), key = lambda e: e[1])
 
     return inferences
+
+
+def getAccuracy(inferences):
+    total = len(inferences)
+    correct = 0
+    weightedCorrect = 0.0
+    for i in range(len(inferences)):
+        index, value = max(enumerate(inferences[i]), key = lambda e: e[1])
+        if index == data.y_train.iloc[i]:
+            correct += 1
+            weightedCorrect += value
+    accuracy = float(correct) / float(total)
+    weightedAccuracy = weightedCorrect / float(total)
+    print("Accuracy: ", accuracy)
+    print("Weighted Accuracy: ", weightedAccuracy)
 
 
 def computeFitness(inferences):
