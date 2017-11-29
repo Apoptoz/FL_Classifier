@@ -10,7 +10,9 @@
 This work is an attempt to implement the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) \\
 The Iris data is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width. \\
 
-\section{Classification model for fuzzy rules}
+
+\section{Fuzzy Logic}
+\subsection{Classification model for fuzzy rules}
 For each of these attributes $x_{i}(i=1\cdots n)$ there is three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
 Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use that function to express that not all parameters are needed in a rule.
 Thus we can generalise rules as follow :
@@ -52,7 +54,9 @@ $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B wi
 		{\sum\limits_{u_i\in U_T}{\mu_A(u_i)}}
 \]
 
-\section{Applying Genetic Algorithm}
+\section{Genetic Algorithm}
+
+\subsection{Presentation}
 
 \subsection{Modeling the algorithm}
 
@@ -80,6 +84,18 @@ Mutation is a key point in genetic algorithm to explore the problem space by mai
 In our algorithm, there is a mutation parameter that will give the chance of each gene to flip the bit. Each bit of each rule of an individual will have a probability $p_{mut}$ to be flipped.\\
 If $p_{mut}$ is too high the information given by the chromosome might be lost because it changed too much, and thus the algorithm may never converge. Else if $p_{mut}$ is too low, the exploration space may be restricted and thus the algorithm may converge to a local optimum.
 
+
+\subsection{The fitness function}
+
+According to the law of the fittest, the best individuals have more chance breeding and transmiting their genes. But what does it mean for an individual to be fit?\\
+For this work, we define the fitness function as the accuracy of prediction of an individual given a test data.
+
+\section{Implementation}
+
+Optimization : cache individual rule fitnesses\\
+Set of rules : may be rules that are incorrect 
+
+\section{Results and Conclusion}
 
 \bibliography{GFL.bib}
 \bibliographystyle{plain}
