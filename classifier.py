@@ -30,7 +30,7 @@ class Triangle:
         self.min = min
         self.max = max
         self.alpha_cut = alpha_cut
-
+        
     def valAt(self,x): 
         alpha = 2/(self.max-self.min)
         f = lambda x: alpha*(x-self.min)
@@ -136,10 +136,27 @@ def getTruth(rule):
 def getMuA(muArray,rule):
 
     #Multiply the muArray with the rule to "eliminate" the unused fuzzy sets
-    muValues = [muArray[i]*rule[i] for i in range(12)]
+
+    ####
+    #That was really a bad idea: because you then take the min and max of values of 0 that should not be used.
+    ####
+    '''
+    
+    muValues = [muArray[i]*rule[i] if rule[i]==1 else -1 for i in range(12)]
+    print(muValues)
     #Then, make an array for all the max membership values of each parameters
     #And take the min of that array
-    muA = min( [ max(muValues[i:i+3]) for i in [0,3,6,9] ] )
+    '''
+    maxArray = []
+    
+    for i in [0,3,6,9]:
+        if rule[i:i+3] != [0,0,0]: #Don't care about that parameter
+            maxArray.append(max([ muArray[j]*rule[j] for j in range(i,i+3)]))
+    
+    #muA = min( [ max(muValues[i:i+3]) for i in [0,3,6,9] ] )
+    if maxArray == []: #Incorrect rule?
+        return -1
+    muA = min(maxArray)
     return muA
                
 
@@ -191,6 +208,34 @@ def getMuArray(row):
     muArray += [smallTriangle.at(x4),medTriangle.at(x4),largeTriangle.at(x4)]
     return muArray
 
+
+
+def simple_infer(rules):
+    
+    inferences = []
+    for index,datum in data.X_train.iterrows():
+        classes = [[],[],[]]
+        inf = [0,0,0]
+        
+        for rule in rules:
+
+            #Cache
+            cache = str(rule)+str(datum)
+            if cache not in inferenceCache:
+                inferenceCache[cache] = getMuA(getMuArray(datum),rule)
+            inferred = inferenceCache[cache]
+            #print(inferred)
+
+            inferred = getMuA(getMuArray(datum),rule)
+            
+            confidence = getTruth(rule)
+            classes[confidence[0]].append(inferred)
+        for i in range(len(classes)):
+            if classes[i] != []:
+                inf[i] += sum(classes[i])/len(classes[i])
+        inferences.append(max(enumerate(inf), key=lambda x:x[1])[0])
+    return inferences
+
 # Infers classes for all data using the provided rules
 # Returns list of lists of the three strengths of memberships to classes 1, 2 and 3
 # Where class1 is at index 0, class2 at index 1, and class3 at index 2 of each list
@@ -207,7 +252,8 @@ def infer(rules, forAccuracy = False):
         for rule in rules:
             ruleString = str(rule)
             if ruleString not in inferenceCache:
-                inferenceCache[ruleString] = applyRule(rule, datum)
+                inferenceCache[ruleString] = getMuA(getMuArray(datum),rule)
+                #inferenceCache[ruleString] = applyRule(rule, datum)
             inferred = inferenceCache[ruleString]
             confidence = getTruth(rule)
             #nferred = confidences[i]*getMuA(getMuArray(datum),rule)
@@ -260,7 +306,7 @@ def getAccuracy(inferences):
 
 
 def computeFitness(inferences):
-    print("ComputeFit")
+    #print("ComputeFit")
     fitDatum = []
     for confidence in inferences:
         fitDatum.append(confidence)
