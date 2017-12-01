@@ -1,6 +1,7 @@
 ﻿import data
 from random import randint
 import numpy as np
+from sklearn.metrics import accuracy_score
 
 from functools import reduce
 
@@ -20,7 +21,6 @@ nbRules = 10
 
 truthCache = {}
 inferenceCache = {}
-
 
 
 #Class who can compute Triangle functions
@@ -94,26 +94,41 @@ def generateRule():
 
 
 
-def getMuArrays(classNumber=-1):
-    muArrayList = []
-    
-    if classNumber == -1:
-        array = data.X_train
-    else:
-        array = data.getClassArray(classNumber)
-    for _,row in array.iterrows():
-        muArrayList.append(getMuArray(row))
-    return muArrayList
-
 def getCompetitionStrength(rule):
     competitionStrength = [0,0,0]
-
+    
     for classNumber in range(3):
-        muArrays = getMuArrays(classNumber)
-
-        competitionStrength[classNumber] = sum( [ getMuA(muArrays[i],rule) for i in range(len(muArrays)) ] )
+        classArray = data.getClassArray(classNumber)
+        competitionStrength[classNumber] = sum( [ getMuA(rule,row) for _,row in classArray.iterrows()] )
 
     return competitionStrength
+    
+
+
+#This function return the class number and the truth degree of that class based on the training function.
+def getConf(rule):
+    #Transform [0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1] in '001001010001'
+    hashedRule = "".join(str(i) for i in rule)
+    if hashedRule in truthCache:
+        return truthCache[hashedRule]
+    else:
+        #Go through the training data to get competitionStrength
+        competitionStrength = getCompetitionStrength(rule)
+        #Divide by the sum to get truth degree (between 0 and 1)
+        strSum = sum(competitionStrength)
+        if strSum != 0:
+            truthDegree = [i/strSum for i in competitionStrength]
+            #Get the class with the best value, and its value
+            maxIndex,maxValue = max(enumerate(truthDegree),key=lambda x:x[1])
+        else:
+            maxIndex,maxValue = (-1,0) #No classes are recognized     
+        
+        truthCache[hashedRule] = (maxIndex,maxValue)
+        return (maxIndex,maxValue)
+
+#Get the best class and its confidence degree for each rule
+def getConfVect(rules):
+    return [getConf(rule) for rule in rules]
 
 
 
@@ -132,8 +147,80 @@ def getTruth(rule):
         truthCache[ruleString] = [index, value]
         return [index, value]
 
+def toCacheString(rule,data_row):
+    strRule = "".join(str(i) for i in rule)
+    strRow = ""
+    for x in range(len(data_row)):
+        strRow += "%0.3f" %data_row[x]
+    return strRule+strRow
+
+
+def getMuA(rule,data_row):
+    cacheString = toCacheString(rule,data_row)
+    if cacheString in inferenceCache:
+        return inferenceCache[cacheString]
+    else:
+        maxArray = []
+        ruleCounter = 0
+        for x in range(0, len(data_row)):
+            datum = data_row[x]
+            if rule[ruleCounter:ruleCounter+3] != [0,0,0]:
+                small = 0
+                medium = 0
+                large = 0
+                if rule[ruleCounter] == 1:
+                    small = smallTriangle.at(datum)
+                if rule[ruleCounter+1] == 1:
+                    medium = medTriangle.at(datum)
+                if rule[ruleCounter+2] == 1:
+                    large = largeTriangle.at(datum)
+                maxArray.append(max(small,medium,large))
+            ruleCounter += 3
+        if maxArray == []:
+            muA = -1
+        else:
+            muA = min(maxArray)
+        inferenceCache[cacheString] = muA
+        return muA
+
+def getMuAVect(rules,data_row):
+    return [getMuA(rule,data_row) for rule in rules]
+
+
+def getPredictedConfVect(confVect,muAVect):
+    predictedConfVect = [0,0,0]
+    cnt = [1,1,1]
+    for i in range(len(confVect)):
+        ruleClass,ruleConf = confVect[i]
+        if ruleClass != -1:
+            predictedConfVect[ruleClass] += muAVect[i]*ruleConf
+            cnt[ruleClass] += 1
+
+    averagedPredictedConfVect = [predictedConfVect[i]/cnt[i] for i in range(3)]
+    return averagedPredictedConfVect
+
+def getPredictedClass(rules,data_row):
+    predictedConfVect = getPredictedConfVect(getConfVect(rules),getMuAVect(rules,data_row))
+    predictedClass,predictedConf = max(enumerate(predictedConfVect),key=lambda x:x[1])
+    return predictedClass,predictedConf
+
+
+def getPredictedClasses(indiv,data):
+    predictedClassArray = []
+    for _,data_row in data.iterrows():
+        predictedClass,predictedConf = getPredictedClass(indiv.rules,data_row)
+        predictedClassArray.append(predictedClass)
+    return predictedClassArray
+
+
+def getAccuracy(indiv):
+    predictedClassArray = getPredictedClasses(indiv,data.X_test)
+    return accuracy_score(data.y_test,predictedClassArray)
+
+
+    
 #Compute µ_a given a u_i and a rule
-def getMuA(muArray,rule):
+def getMuAPast(muArray,rule):
 
     #Multiply the muArray with the rule to "eliminate" the unused fuzzy sets
 
@@ -220,7 +307,7 @@ def simple_infer(rules):
         for rule in rules:
 
             #Cache
-            cache = str(rule)+str(datum)
+
             if cache not in inferenceCache:
                 inferenceCache[cache] = getMuA(getMuArray(datum),rule)
             inferred = inferenceCache[cache]
@@ -290,7 +377,7 @@ def infer(rules, forAccuracy = False):
     return inferences
 
 
-def getAccuracy(inferences):
+def getAccuracyPast(inferences):
     total = len(inferences)
     correct = 0
     weightedCorrect = 0.0
@@ -311,7 +398,6 @@ def computeFitness(inferences):
     for confidence in inferences:
         fitDatum.append(confidence)
     return sum(fitDatum)
-                                                    
 
 
 def applyRule(rule, data):

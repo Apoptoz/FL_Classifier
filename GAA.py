@@ -3,7 +3,7 @@ import classifier
 from random import randint,random
 
 #### GA VARIABLES ####
-mutProb = .01
+mutProb = .05
 tournamentSize = 5
 elitism = True
 popSize = 20
@@ -26,9 +26,10 @@ class Indiv:
         return s
 		
     def getFitness(self):
+        return classifier.getAccuracy(self)
         #inferences = classifier.infer(self.rules)
-        inferences = classifier.simple_infer(self.rules)
-        return classifier.computeFitness(inferences)
+        #inferences = classifier.simple_infer(self.rules)
+        #return classifier.computeFitness(inferences)
    
 class Population:
 
@@ -122,10 +123,10 @@ if __name__ == '__main__':
     for i in range(GENERATION_NUMBER):
 
         newpop = Population(False)
-        print("Generation number :"+str(i))
+        print("Generation number : "+str(i))
    
         for j in range(popSize):
-            print("Enfant numéro :"+str(j))
+            print("Children number : "+str(j))
        
             parent1 = tournament(pop)
             parent2 = tournament(pop)
@@ -137,6 +138,7 @@ if __name__ == '__main__':
             mutation(newpop.listpop[j])
        
         pop = newpop
+        print("Fittest accuracy : " + str(pop.getFittest().getFitness()))
     thisFittest = pop.getFittest()
     print(thisFittest)
     inferencesForAccuracy = classifier.infer(thisFittest.rules, True)
