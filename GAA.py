@@ -3,11 +3,11 @@ import classifier
 from random import randint,random
 
 #### GA VARIABLES ####
-mutProb = .05
+mutProb = .1
 tournamentSize = 5
 elitism = True
 popSize = 20
-GENERATION_NUMBER = 200
+GENERATION_NUMBER = 20
 ######################
 
 
@@ -22,7 +22,8 @@ class Indiv:
     def __str__(self):
         s = ""
         for i in range(classifier.nbRules):
-            s +="Rule "+str(i)+": "+ str(self.rules[i])+"\n"
+            s +="Rule "+str(i)+": "+ str(self.rules[i])+"\t"
+            s += str(classifier.getTruth(self.rules[i])) + "\n"
         return s
 		
     def getFitness(self):
@@ -126,7 +127,6 @@ if __name__ == '__main__':
         print("Generation number : "+str(i))
    
         for j in range(popSize):
-            print("Children number : "+str(j))
        
             parent1 = tournament(pop)
             parent2 = tournament(pop)
@@ -138,8 +138,7 @@ if __name__ == '__main__':
             mutation(newpop.listpop[j])
        
         pop = newpop
-        print("Fittest accuracy : " + str(pop.getFittest().getFitness()))
-    thisFittest = pop.getFittest()
-    print(thisFittest)
-    inferencesForAccuracy = classifier.infer(thisFittest.rules, True)
-    classifier.getAccuracy(inferencesForAccuracy)
+        
+        thisFittest = pop.getFittest()
+        print("Fittest accuracy : " + str(thisFittest.getFitness()))
+        print(thisFittest)

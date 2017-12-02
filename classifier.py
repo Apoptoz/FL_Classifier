@@ -139,8 +139,8 @@ def getTruth(rule):
 
     competitionStrength = getCompetitionStrength(rule)
     sumComp = sum(competitionStrength)
-    if sumComp == 0:
-        truthCache[ruleString] = [0,0]
+    if sumComp == 0: #This rule correspond to no class
+        truthCache[ruleString] = [-1,0]
         return [0,0]
     else:
         index, value = max(enumerate([competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]), key = lambda e: e[1])
@@ -177,7 +177,7 @@ def getMuA(rule,data_row):
                 maxArray.append(max(small,medium,large))
             ruleCounter += 3
         if maxArray == []:
-            muA = -1
+            muA = 0 #I'm not sure about that
         else:
             muA = min(maxArray)
         inferenceCache[cacheString] = muA
@@ -190,6 +190,8 @@ def getMuAVect(rules,data_row):
 def getPredictedConfVect(confVect,muAVect):
     predictedConfVect = [0,0,0]
     cnt = [1,1,1]
+
+
     for i in range(len(confVect)):
         ruleClass,ruleConf = confVect[i]
         if ruleClass != -1:
@@ -215,7 +217,8 @@ def getPredictedClasses(indiv,data):
 
 def getAccuracy(indiv):
     predictedClassArray = getPredictedClasses(indiv,data.X_test)
-    return accuracy_score(data.y_test,predictedClassArray)
+    score = accuracy_score(data.y_test,predictedClassArray)
+    return score
 
 
     
