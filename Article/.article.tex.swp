@@ -102,8 +102,123 @@ Set of rules : may be rules that are incorrect
 
 \section{Compute the fitness function}
 
+The calculation of the fitness function is the core of our implementation.\\
+We will be trying to explain in depth the structure of that function.
+
+\subsection{Vector of best class confidence}
+
+Given a rule, we measure the truth degree of that rule using the formula previously described on our training data for each class.
+The function \textit{getConf} gives the vector :
+
+\[
+\begin{bmatrix}
+C_1:\mu_b^1(r)\\
+C_2:\mu_b^2(r)\\
+C_3:\mu_b^3(r)
+\end{bmatrix} \]
+
+with $C_i$ the class and $\mu_b^i(r)$ the truth degree of that rule $r$ on class $i$.
+\\
+\\
+An Individual is composed by a set of rules, so the function \textit{getConfVect} gives the vector :
+\[
+\vec{Conf}=
+\begin{bmatrix}
+C_i^1:\mu_b^i(r_1)\\
+C_i^2:\mu_b^i(r_2)\\
+\vdots\\
+C_i^m:\mu_b^i(r_m)\\
+\end{bmatrix} \]
+With $m$ the number of rules. For each rule, we take the maximum $\mu_b$ from \textit{getConf}. This vector represents for each rule fo an individual, what class it fits the better, and with which confidence.
+
+\subsection{Vector of $\mu_A$, given a data instance and rules}
+
+The next step is to do fuzzy composition on each of the rule, given an instance of data, here $[x_1,x_2,x_3,x_4]$.
+
+The function \textit{getMuA} takes two parameters: a data instance and a rule.
+
+Remembering this formula:
+\[A=[x_{p(1)}=\bigcup_{j\in D(1)}A(p(1),j) ] \bigcap\cdots\bigcap[x_{p(s)}=\bigcup_{j\in D(s)}A(p(s),j)]\]
+
+We chose to measure $\mu_a$ like this:
+
+\[\mu_A=
+min
+\begin{pmatrix}
+max(A(p(1),j),\forall j \in D(1))\\
+\vdots \\
+max(A(p(s),j),\forall j \in D(s))
+\end{pmatrix}
+    \]
+\textbf{Example:}\\
+\\
+Let take our example rule:
+\begin{center}
+If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big
+\end{center}
+And a data instance (normalized): $x_1=0.97,x_2=0.86,x_3=0.97,x_4=0.88$.\\
+\[
+\begin{split}
+\mu_A &= min
+\begin{pmatrix}
+max(\mu_S(0.97))\\
+max(\mu_M(0.86),\mu_B(0.86))\\
+max(\mu_S(0.88),\mu_M(0.88),\mu_B(0.88))
+\end{pmatrix}\\
+&= min
+\begin{pmatrix}
+max(0)\\
+max(0.28,0.72)\\
+max(0,0.24,0.76)
+\end{pmatrix}\\
+&= min(0,0.72,0.76) = 0
+\end{split}
+\]
+\\
+\begin{center} \rule[1ex]{.5\textwidth}{.5pt} \end{center}
+\newpage
+
+In the same fashion as we did for our confidence vector, we use the function \textit{getMuVect}:
+
+\[
+\vec{\mu_A^k}=
+\begin{pmatrix}
+\mu_A^k(r_1)\\
+\vdots\\
+\mu_A^k(r_m)
+\end{pmatrix}
+\]
+For the k-th piece of data from the test data.
+
+\subsection{Assembling the pieces: predicting a class}
+
+We want now to get the predicted confidence of classes for an instance.\\
+$\vec{Conf}$ gives us the fittest class for each rule, and $\vec{\mu_A}$ its confidence given an instance of data. \\
+There is several way to compute the class predicted using these vectors.
+\\
+\\
+\textbf{Simple method:}
+\\
+For each class, we take the average of $\mu_A$ for every rule that have that class as the highest truth degree:
+\[
+\text{Predicted Classes Confidence: }
+\begin{pmatrix}
+avg(\mu_A^k(r_i)), \forall & i & | & Conf(r_i)=C_1\\
+avg(\mu_A^k(r_i)), \forall & i & | & Conf(r_i)=C_2\\
+avg(\mu_A^k(r_i)), \forall & i & | & Conf(r_i)=C_3
+\end{pmatrix}
+\]
+Here, the class predicted will simply be the maximum average.
 
 
+\subsection{Accuracy \& Fitness function}
+
+The accuracy gives us the percentage of well predicted instances of our classification on a test data. We can use only this score as a fitness function.\\
+It seems that using the training data to define the truth degree, then applying the simple method is already a good way to classify.\\
+When taking the average of the average accuracy of 20 populations of 20 randomly generated individuals, we have a 0.77 accuracy.\\
+And when taking the average accuracy of the fittest individual of 20 random populations, we get a 0.96 accuracy.\\
+Decision Tree Classifier is a similar method with crisp rules. The accuracy of that method is 0.92 on the same dataset.\\
+However, accuracy score is not our only concern : we would like to have the fewest rules as possible, as we want to produce a clear and simple rule system if one exists. So we have to compute a fitness function combining both the accuracy score and the complexity of the ruleset.
 
 \bibliography{GFL.bib}
 \bibliographystyle{plain}

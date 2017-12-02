@@ -141,7 +141,7 @@ def getTruth(rule):
     sumComp = sum(competitionStrength)
     if sumComp == 0: #This rule correspond to no class
         truthCache[ruleString] = [-1,0]
-        return [0,0]
+        return [-1,0]
     else:
         index, value = max(enumerate([competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]), key = lambda e: e[1])
         truthCache[ruleString] = [index, value]
