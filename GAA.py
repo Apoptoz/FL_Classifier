@@ -29,10 +29,15 @@ class Indiv:
     def getFitness(self):
         acc = classifier.getAccuracy(self)
         goodRulesNb,badRulesNb = classifier.checkRules(self)
+        complexity = classifier.calcComplexity(self)
 
-        score = acc - badRulesNb/10 + goodRulesNb
-        
-        
+        w1 = 0.6
+        w2 = 0.4
+
+        score = w1*(1.0-acc) + w2*(float(complexity) / float(len(self.rules)*4))
+        # this maximizes the accuracy and minimizes "complexity"
+        score = -1 * score
+
         return score
 
         #1 - nbofaccuratelyclassified / number of cases find
@@ -149,5 +154,5 @@ if __name__ == '__main__':
         pop = newpop
         
         thisFittest = pop.getFittest()
-        print("Fittest accuracy : " + str(thisFittest.getFitness()))
+        print("Fittest accuracy : " + str(classifier.getAccuracy(thisFittest)))
         print(thisFittest)

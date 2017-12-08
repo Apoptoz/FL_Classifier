@@ -222,7 +222,15 @@ def checkRules(indiv):
                 print("This is really weird in classifier:checkrules")
     return goodRulesNb,badRulesNb
 
-    
+
+def calcComplexity(indiv):
+    complexity = 0
+    for rule in indiv.rules:
+        for i in range(len(rule), 3):
+            if not (rule[i] == rule[i+1] == rule[i+2] == 0):
+                complexity += 1
+    return complexity
+ 
 #Compute µ_a given a u_i and a rule
 def getMuAPast(muArray,rule):
 
