@@ -11,7 +11,49 @@ This work is an attempt to implement the classifier presented by Xiong, N., and 
 The Iris data is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width. \\
 
 
+Genetic Algorithm is used to design the Knowledge Base of our Fuzzy System, which is its data base and its rule base.
+
+
+There is two type of GA rule based classifier : Pittsburgh approach and the Michigan approach one. Pittsburgh : Each chromosome is a rule set. Michigan : each chromosome is a rule, the system evolve as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
+
+
+Genetic Algorithm can be used to various part of a fuzzy system:
+
+Tuning the membership function, inference parameters.
+Rule learning
+Rule selection
+
+
+
 \section{Fuzzy Logic}
+
+A fuzzy rulebased system has two components: the Knowledge Base adn the Inference System.
+
+Knowledge Base : storing the available knowledge in the form of fuzzy rules
+Inference system : applying a fuzzy reasoning methodon the inputs and the KB rules to give a system output.
+
+
+Knowledge base is usually obtained from expert knowledge, but also by machine learning since the field emerged in the 80s.
+
+>Data base:
+Granularity (nb of ling terms/labels)/ var
+Membership functions associated ot the labels
+>Rule Base: fuzzy rule composition
+
+KB is composed of RB and DB
+RB: Rule set, DB: Membership funct
+
+input>fuzzification interface>inference mechanism (applying RB \& DB)>Defuzzification Interface> output
+
+
+
+
+
+
+Inference System is set up by choosing the fuzzy operator for each component (conjunction, implication, defuzzifier, etc...)
+
+
+
 \subsection{Classification model for fuzzy rules}
 For each of these attributes $x_{i}(i=1\cdots n)$ there is three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
 Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use that function to express that not all parameters are needed in a rule.

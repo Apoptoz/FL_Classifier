@@ -112,17 +112,19 @@ def getConf(rule):
     if hashedRule in truthCache:
         return truthCache[hashedRule]
     else:
-        #Go through the training data to get competitionStrength
-        competitionStrength = getCompetitionStrength(rule)
-        #Divide by the sum to get truth degree (between 0 and 1)
-        strSum = sum(competitionStrength)
-        if strSum != 0:
-            truthDegree = [i/strSum for i in competitionStrength]
-            #Get the class with the best value, and its value
-            maxIndex,maxValue = max(enumerate(truthDegree),key=lambda x:x[1])
+        if hashedRule == "000000000000":
+            maxIndex,maxValue = (-1,-1)
         else:
-            maxIndex,maxValue = (-1,0) #No classes are recognized     
-        
+            #Go through the training data to get competitionStrength
+            competitionStrength = getCompetitionStrength(rule)
+            #Divide by the sum to get truth degree (between 0 and 1)
+            strSum = sum(competitionStrength)
+            if strSum != 0:
+                truthDegree = [i/strSum for i in competitionStrength]
+                #Get the class with the best value, and its value
+                maxIndex,maxValue = max(enumerate(truthDegree),key=lambda x:x[1])
+            else:
+                maxIndex,maxValue = (-1,0) #No classes are recognized
         truthCache[hashedRule] = (maxIndex,maxValue)
         return (maxIndex,maxValue)
 
@@ -131,21 +133,6 @@ def getConfVect(rules):
     return [getConf(rule) for rule in rules]
 
 
-
-def getTruth(rule):
-    ruleString = str(rule)
-    if ruleString in truthCache:
-        return truthCache[ruleString] 
-
-    competitionStrength = getCompetitionStrength(rule)
-    sumComp = sum(competitionStrength)
-    if sumComp == 0: #This rule correspond to no class
-        truthCache[ruleString] = [-1,0]
-        return [-1,0]
-    else:
-        index, value = max(enumerate([competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]), key = lambda e: e[1])
-        truthCache[ruleString] = [index, value]
-        return [index, value]
 
 def toCacheString(rule,data_row):
     strRule = "".join(str(i) for i in rule)
@@ -177,7 +164,7 @@ def getMuA(rule,data_row):
                 maxArray.append(max(small,medium,large))
             ruleCounter += 3
         if maxArray == []:
-            muA = 0 #I'm not sure about that
+            muA = 0 #I'm not sure about that : means that it's the joker rule
         else:
             muA = min(maxArray)
         inferenceCache[cacheString] = muA
@@ -220,6 +207,20 @@ def getAccuracy(indiv):
     score = accuracy_score(data.y_test,predictedClassArray)
     return score
 
+def checkRules(indiv):
+    #Get a score of good rules (joker rule) and bad rules (no classes)
+    confVect = getConfVect(indiv.rules)
+    goodRulesNb = 0
+    badRulesNb = 0
+    for classNb,conf in confVect:
+        if classNb == -1:
+            if conf == 0:
+                badRulesNb += 1
+            elif conf == -1:
+                goodRulesNb += 1
+            else:
+                print("This is really weird in classifier:checkrules")
+    return goodRulesNb,badRulesNb
 
     
 #Compute µ_a given a u_i and a rule
@@ -300,6 +301,37 @@ def getMuArray(row):
 
 
 
+##############################
+
+#        OLD FUNCTIONS       #
+
+##############################
+
+
+
+
+
+def getTruth(rule):
+    ruleString = str(rule)
+    if ruleString in truthCache:
+        return truthCache[ruleString] 
+
+    competitionStrength = getCompetitionStrength(rule)
+    sumComp = sum(competitionStrength)
+    if sumComp == 0: #This rule correspond to no class
+        truthCache[ruleString] = [-1,0]
+        return [-1,0]
+    else:
+        index, value = max(enumerate([competitionStrength[0]/sumComp,competitionStrength[1]/sumComp,competitionStrength[2]/sumComp]), key = lambda e: e[1])
+        truthCache[ruleString] = [index, value]
+        return [index, value]
+
+
+
+
+
+
+
 def simple_infer(rules):
     
     inferences = []
@@ -329,6 +361,8 @@ def simple_infer(rules):
 # Infers classes for all data using the provided rules
 # Returns list of lists of the three strengths of memberships to classes 1, 2 and 3
 # Where class1 is at index 0, class2 at index 1, and class3 at index 2 of each list
+
+
 
 def infer(rules, forAccuracy = False):
     class1 = []

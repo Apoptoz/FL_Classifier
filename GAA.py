@@ -3,7 +3,7 @@ import classifier
 from random import randint,random
 
 #### GA VARIABLES ####
-mutProb = .1
+mutProb = .05
 tournamentSize = 5
 elitism = True
 popSize = 20
@@ -23,11 +23,20 @@ class Indiv:
         s = ""
         for i in range(classifier.nbRules):
             s +="Rule "+str(i)+": "+ str(self.rules[i])+"\t"
-            s += str(classifier.getTruth(self.rules[i])) + "\n"
+            s += str(classifier.getConf(self.rules[i])) + "\n"
         return s
 		
     def getFitness(self):
-        return classifier.getAccuracy(self)
+        acc = classifier.getAccuracy(self)
+        goodRulesNb,badRulesNb = classifier.checkRules(self)
+
+        score = acc - badRulesNb/10 + goodRulesNb
+        
+        
+        return score
+
+        #1 - nbofaccuratelyclassified / number of cases find
+        
         #inferences = classifier.infer(self.rules)
         #inferences = classifier.simple_infer(self.rules)
         #return classifier.computeFitness(inferences)
