@@ -38,6 +38,7 @@ class Indiv:
         # this maximizes the accuracy and minimizes "complexity"
         score = -1 * score
 
+        
         return score
 
         #1 - nbofaccuratelyclassified / number of cases find

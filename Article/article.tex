@@ -1,5 +1,12 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{
+	urlcolor=red,
+	linkcolor=red,
+	colorlinks=red,
+}
+
 \begin{document}
 \title{Implementation of a Fuzzy Rule-Based Classifier using Genetic Algorithms}
 \author{Rashed,David,Joseph}
@@ -7,27 +14,32 @@
 %\pagestyle{headings}
 
 \section{Introduction}
-This work is an attempt to implement the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) \\
-The Iris data is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width. \\
 
+Usually, fuzzy systems are designed by expert. We rely on expert to find the membership values and the rules to design the Knowledge Base.
+However, there might be some cases where the expert is not trustworthy, or there is not expert available or else that a human may not be able to be an expert in our domain. Thus, this essay is trying to explore the use of a computer heuristic to design one part of a fuzzy rule-based classifier, namely Genetic Algorithm (GA).
 
-Genetic Algorithm is used to design the Knowledge Base of our Fuzzy System, which is its data base and its rule base.
+GA is proven to be a good on optimization problems. They can search through complex spaces efficiently. Moreover, the fitness function let us implement some biases or preferences.
 
+The goal of this project is to implement a rule based classification system using both genetic algorithm and fuzzy logic.
+We expect our algorithm to find rule set that satisfies two objectives : accuracy \& simplicity.
+We want a rule set that classifies correctly our dataset, but also have simple and human-interpretable rules. 
 
-There is two type of GA rule based classifier : Pittsburgh approach and the Michigan approach one. Pittsburgh : Each chromosome is a rule set. Michigan : each chromosome is a rule, the system evolve as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
+This work is inspired by the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) based on the Iris data. This dataset is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width,and classes are Iris Setosa, Iris Verticolor and Iris Virginica. \\
 
-
-Genetic Algorithm can be used to various part of a fuzzy system:
-
-Tuning the membership function, inference parameters.
-Rule learning
-Rule selection
-
-
+(Do we have to do section X is for Y,....)
 
 \section{Fuzzy Logic}
 
-A fuzzy rulebased system has two components: the Knowledge Base adn the Inference System.
+\subsection{Bla}
+
+\subsection{Fuzzification}
+
+\subsection{Inference system}
+
+\subsection{Defuzzification}
+
+
+A fuzzy rulebased system has two components: the Knowledge Base and the Inference System.
 
 Knowledge Base : storing the available knowledge in the form of fuzzy rules
 Inference system : applying a fuzzy reasoning methodon the inputs and the KB rules to give a system output.
@@ -66,7 +78,7 @@ $\bigcup$ corresponds to \textbf{or} and $\bigcap$ to \textbf{and}.\\
 So for exemple, if:
 \[D(1)=\{Small\},D(2)=\{Medium,Big\},D(3)=\{\},D(4)=\{Small,Medium,Big\}\]
 Then our rule would read as:
-\begin{center}If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big, then C1 or C2 or C3 or C4.\end{center} 
+\begin{center}If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big, then $C_i$.\end{center} 
 There is 12 different membership functions that can be present or not in a rule. If all the functions are absent from the rule, we have an empty fuzzy set for the condition part, which is an invalid rule.\\
 Thus there is $2^{12}-1=4095$ possible rules. The number of rules is exponentially increasing with the number of parameters and linguistic variables. We could have think to encode the resulting class in our rule, but it would have increase the search space. \\ 
 \\
@@ -83,6 +95,7 @@ The consequent B is a crisp subset which defines as follow:
 	1 & \text{if $class(u_i)=B$}\\
 	0 & \text{otherwise}
 \end{cases}\]
+(For the class prediction later, B will be this time a fuzzy subset)\\
 \\
 $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B will be used to compute the truth value of a rule for each class:
 \[
@@ -96,9 +109,21 @@ $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B wi
 		{\sum\limits_{u_i\in U_T}{\mu_A(u_i)}}
 \]
 
-\section{Genetic Algorithm}
+\section{Rule Based Genetic Algorithm}
 
 \subsection{Presentation}
+
+There is two type of GA rule based classifier : Pittsburgh approach and the Michigan approach one. Pittsburgh : Each chromosome is a rule set. Michigan : each chromosome is a rule, the system evolve as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
+
+
+Genetic Algorithm can be used to various part of a fuzzy system:
+
+Tuning the membership function
+Rule learning
+Rule selection
+Learning of Knowledge Base
+Inference parameters
+Etc... (see \url{http://sci2s.ugr.es/sites/default/files/files/TematicWebSites/GeneticFuzzySystems/FUZZ-IEEE09_Tutorial_EMOFRBSs-Ishibuchi-Alcala.pdf})
 
 \subsection{Modeling the algorithm}
 

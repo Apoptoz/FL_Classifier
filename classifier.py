@@ -223,12 +223,16 @@ def checkRules(indiv):
     return goodRulesNb,badRulesNb
 
 
-def calcComplexity(indiv):
+def calcComplexity(indiv,dontCare=True):
     complexity = 0
     for rule in indiv.rules:
-        for i in range(len(rule), 3):
-            if not (rule[i] == rule[i+1] == rule[i+2] == 0):
-                complexity += 1
+        if dontCare:
+            for i in range(0, 3):
+                if not (rule[i] == rule[i+1] == rule[i+2] == 0):
+                    complexity += 1
+                    i += 3
+        else:
+            complexity += sum(rule)        
     return complexity
  
 #Compute µ_a given a u_i and a rule
