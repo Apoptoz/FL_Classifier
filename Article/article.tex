@@ -305,7 +305,40 @@ When taking the average of the average accuracy of 20 populations of 20 randomly
 And when taking the average accuracy of the fittest individual of 20 random populations, we get a 0.96 accuracy.\\
 Decision Tree Classifier is a similar method with crisp rules. The accuracy of that method is 0.92 on the same dataset.\\
 However, accuracy score is not our only concern : we would like to have the fewest rules as possible, as we want to produce a clear and simple rule system if one exists. So we have to compute a fitness function combining both the accuracy score and the complexity of the ruleset.
+This is where we decided to change our fitness function for his way:
 
+\[f_{fitness}=\alpha (Accuracy)+\beta(Simplicity)\]
+
+$\alpha$ and $\beta$ are to weights we can adjust to ask for more accuracy, or for more \textit{Simplicity}.
+The \textit{Simplicity} is simply measured as one minus the sum of the number of fuzzy sets involved for all the rules of an individual divided by the maximum number of fuzzy sets. 
+For example, if we have two rules :
+\begin{center}[1,0,0,1,1,0,1,1,1,0,0,0] and [0,0,1,0,1,0,0,0,1,1,1,0]
+\end{center}
+Then the \textit{Simplicity} would be $1 - \frac{11}{24} \approx 0.54	$
+
+
+\section{Results}
+
+
+\section{Conclusion}
+
+Based on the work of Xiong and Litz primarily, but also a lot on the work of Ishibuchi, we implemented a genetic fuzzy classifier on a basic classification task which is the Iris dataset.
+We wanted to investigate how good this kind of classifier can do. Furthermore, fuzzy systems usually rely on expert knowledge. This project is also an experimentation to  see if a heuristic algorithm can "find" by himself a part of the knowledge base of a fuzzy system.
+
+There is a lot of ways to implement genetic algorithm to a fuzzy system. Here, we simply used the genetic algorithm to develop the best rule sets, with two points in mind: accuracy and simplicity.
+By generating and evolving population of rule set, we can see convergences toward good solutions, which both have simple rules and a good accuracy, as we showed in the previous section.
+
+In this view, we proved that a fuzzy genetic algorithm is a good classifier, and gives human-interpretable rules, that other classifiers cannot give Bayesian classifier, KNN or SVM become difficult to understand when the solution dimension is too high.
+Decision tree classifier is a similar classifier than ours, but uses crisp logic. It reveals to be less efficient than our algorithm, but the rules are clear to follow.
+
+The fuzzy genetic system however was really slower than expected, one generation takes around 20 seconds to evolve. We tried to cache the computation of the algorithm to gain more speed, but the result is not flagrant. Furthermore, the dataset we're working on is a fairly small one, as it's composed of only 150 samples, and with 4 attributes. Our algorithm will take exponentially more time with bigger dataset, and with more features. We then doubt that this can be an effective way to classify, except if we have a lot of computation power and a real need to produce human-interpretable rules, which can be a reason as the latest AI algorithms become more and more obscure (black-box effect).
+
+We have had other ideas to add to our program, that we sadly did not have time for.
+We wanted to implement a function to create a matlab fuzzy system file, this way we can work on matlab on the knowledge base created by our algorithm.
+Secondly, the confidence level gives us a value for each of the class, we have though to include that to predict all the classes for a given individual. It would be then a Mamdani system, with as an output the confidence of each of the classes.
+Lastly, as did Xiong and Litz, we wanted to implement the membership functions into our individuals, and see if it improves the accuracy. It seems quite easy to do it, as we just add 12 numbers into the gene that will match the peak of each membership functions.
+
+ 
 \bibliography{GFL.bib}
 \bibliographystyle{plain}
 \end{document}
