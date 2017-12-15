@@ -1,6 +1,10 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{graphicx}
+\graphicspath{ {img/} }
+
+
 \hypersetup{
 	urlcolor=red,
 	linkcolor=red,
@@ -9,11 +13,23 @@
 
 \begin{document}
 \title{Implementation of a Fuzzy Rule-Based Classifier using Genetic Algorithms}
-\author{Rashed,David,Joseph}
+\author{Mona Rashed,Quentin David,Joseph Yaconelli}
+\date{December 2017}
 \maketitle
 %\pagestyle{headings}
 
 
+\section{Foreword}
+
+Our code can be download in this github link:
+\url{https://github.com/Apoptoz/FL_Classifier}
+To launch the program, simply type \textit{python3 GAA.py} in a terminal.
+You can tune the parameters in the file GAA.py and classifier.py.\\
+\\
+We shared the work this way:\\
+Rashed: \\
+Joseph: \\
+Quentin: \\
 
 \section{Introduction}
 
@@ -28,8 +44,6 @@ We want a rule set that correctly classifies our dataset, but also has simple an
 
 This work is inspired by the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) based on the Iris dataset. This dataset is a well known classification dataset with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width, and the classes are Iris Setosa, Iris Verticolor and Iris Virginica. \\
 
-(Do we have to do section X is for Y,....)
-
 \section{Fuzzy Logic}
 
 Fuzzy Logic is a theory to deal with uncertainty.
@@ -37,55 +51,25 @@ Zadeh introduced fuzzy set theory in 1965. Usually logic is seen with a Boolean 
 However, fuzzy sets are made to encompass the sometimes uncertain nature of an assertion. An object will belong to a fuzzy set with a certain truth value which is called the \textit{grade of membership}.
 Fuzzy Logic have been applied in a lot of domains, notably in control systems and in artificial intelligence.
 
-
-Fuzzy set is defined by Membership function
-
-Fuzzy variable/Linguistic concepts
-
-A fuzzy system goes through three processes : fuzzification, inference, and finally defuzzification. Each of these process will be described.
-
-
-\subsection{Fuzzification}
+\begin{center}
+\includegraphics[scale=0.5]{fuzzysystem}
+\end{center}
 
 Fuzzification is the first step of a fuzzy system. It takes crisp input values and turns them into fuzzy values through a membership functions.
 For our classifier, we have designed 3 linguistic variables for each of the parameters. In total, we have 12 membership functions.
 The three linguistics variables are SMALL, MEDIUM and LARGE. We decided to have the same functions for each of the parameters.
+All the parameters are normalized so we get for all a value between 0 and 1.
 
-(PLOT OF THE THREE FUNCTIONS??)
+\begin{center}
+\includegraphics[scale=0.5]{fuzzymembership}
+\end{center}
 
-\subsection{Inference system}
+The inference is the process of getting an ouput given an output. For a classification task, the output will be the predicted class.
+This process is described in the Fitness function section.
 
-\subsection{Defuzzification}
+Finally, the defuzzification is the part where we map our output into a quantifiable crisp value. For a classification task, the defuzzification consist in taking the class with have the most average accuracy. Again, this step is explained in the fitness function section.
 
-
-A fuzzy rule-based system has two components: the Knowledge Base and the Inference System.
-
-Knowledge Base : storing the available knowledge in the form of fuzzy rules
-Inference system : applying a fuzzy reasoning method on the inputs and the KB rules to give a system output.
-
-
-The knowledge base is usually obtained from expert knowledge, but also by machine learning since the field emerged in the 80s.
-
->Data base:
-Granularity (nb of ling terms/labels)/ var
-Membership functions associated to the labels
->Rule Base: fuzzy rule composition
-
-KB is composed of RB and DB
-RB: Rule set, DB: Membership funct
-
-input>fuzzification interface>inference mechanism (applying RB \& DB)>Defuzzification Interface> output
-
-
-
-
-
-
-Inference System is set up by choosing the fuzzy operator for each component (conjunction, implication, defuzzifier, etc...)
-
-
-
-\subsection{Classification model for fuzzy rules}
+\section{Confidence degree of a rule}
 For each of these attributes $x_{i}(i=1\cdots n)$ there are three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
 Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use this function to express that not all parameters are needed in a rule.
 Thus we can generalize rules as follows :
@@ -132,17 +116,29 @@ $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B wi
 
 \subsection{Presentation}
 
+Genetic Algorithm is a heuristic search algorithm based on the law of evolution to reach for an optimal solution within a problem space. GA are good for multi-dimensional problems.
+
+\begin{center}
+\includegraphics[scale=0.5]{genealgo}
+\end{center}
+
 There are two types of GA rule based classifiers: the Pittsburgh approach and the Michigan approach. Pittsburgh: Each chromosome is a rule set. Michigan: each chromosome is a rule, and the system evolves as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
 
 
-Genetic Algorithms can be used for various parts of a fuzzy system:
-
-Tuning the membership function
-Rule learning
-Rule selection
-Learning of Knowledge Base
-Inference parameters
+Genetic Algorithms can be used for various parts of a fuzzy system:\\
+\\
+Tuning the membership function\\
+Rule learning\\
+Rule selection\\
+Learning of Knowledge Base\\
+Inference parameters\\
 Etc... (see \url{http://sci2s.ugr.es/sites/default/files/files/TematicWebSites/GeneticFuzzySystems/FUZZ-IEEE09_Tutorial_EMOFRBSs-Ishibuchi-Alcala.pdf})
+
+\begin{center}
+Genetic algorithm to learn a fuzzy rulebase
+\includegraphics[scale=0.5]{genefuzzy}
+\end{center}
+
 
 \subsection{Modeling the algorithm}
 
@@ -170,26 +166,14 @@ Mutation is a key point in letting genetic algorithms explore the problem space 
 In our algorithm, there is a mutation parameter that will give the chance of each gene flipping its bit. Each bit of each rule of an individual will have a probability $p_{mut}$ of being flipped.\\
 If $p_{mut}$ is too high, the information given by the chromosome might be lost because it changed too much, and thus the algorithm may never converge. However, if $p_{mut}$ is too low, the exploration space may be restricted and thus the algorithm may converge to a local optimum.
 
-
-\subsection{The fitness function}
-
-According to the law of the fittest, the best individuals have more of a chance of breeding and transmitting their genes. But what does it mean for an individual to be fit?\\
-For this work, we define the fitness function as the accuracy of prediction of an individual given a test dataset.
-
-\section{Implementation}
-
-Optimization : cache individual rule fitnesses\\
-Set of rules : may be rules that are incorrect 
-
-\section{Results and Conclusion}
-
-
-
-
 \section{Compute the fitness function}
 
 The calculation of the fitness function is the core of our implementation.\\
 We will explain in depth the structure of that function.
+
+\begin{center}
+\includegraphics[scale=0.3]{fitnessfunct}
+\end{center}
 
 \subsection{Vector of best class confidence}
 
@@ -261,8 +245,6 @@ max(0,0.24,0.76)
 \end{split}
 \]
 \\
-\begin{center} \rule[1ex]{.5\textwidth}{.5pt} \end{center}
-\newpage
 
 In the same fashion as we did for our confidence vector, we use the function \textit{getMuVect}:
 
@@ -279,13 +261,7 @@ For the k-th piece of data from the test data.
 \subsection{Assembling the pieces: predicting a class}
 
 We now want to get the predicted confidence of classes for an instance.\\
-$\vec{Conf}$ gives us the fittest class for each rule, and $\vec{\mu_A}$ its confidence given an instance of data. \\
-There are several ways to compute the class predicted using these vectors.
-\\
-\\
-\textbf{Simple method:}
-\\
-For each class, we take the average of $\mu_A$ for every rule that has that class as the highest truth degree:
+$\vec{Conf}$ gives us the fittest class for each rule, and $\vec{\mu_A}$ its confidence given an instance of data.
 \[
 \text{Predicted Classes Confidence: }
 \begin{pmatrix}
@@ -299,11 +275,7 @@ Here, the class predicted will simply be the maximum average.
 
 \subsection{Accuracy \& Fitness function}
 
-The accuracy gives us the percentage of well predicted instances of our classification on a test data. We can use only this score as a fitness function.\\
-It seems that using the training data to define the truth degree, then applying the simple method is already a good way to classify.\\
-When taking the average of the average accuracy of 20 populations of 20 randomly generated individuals, we have a 0.77 accuracy.\\
-And when taking the average accuracy of the fittest individual of 20 random populations, we get a 0.96 accuracy.\\
-Decision Tree Classifier is a similar method with crisp rules. The accuracy of that method is 0.92 on the same dataset.\\
+The accuracy gives us the percentage of well predicted instances of our classification on a test data. We can use only this score as a fitness function.
 However, the accuracy score is not our only concern : we would like to have the fewest rules as possible, as we want to produce a clear and simple rule system if one exists. So we have to compute a fitness function combining both the accuracy score and the complexity of the rule set.
 This is where we decided to change our fitness function in this way:
 
@@ -319,6 +291,9 @@ Then the \textit{Simplicity} would be $1 - \frac{11}{24} \approx 0.54	$
 
 \section{Results}
 
+\begin{center}
+\includegraphics[scale=0.5]{accresult}
+\end{center}
 
 \section{Conclusion}
 
@@ -340,5 +315,6 @@ Lastly, as did Xiong and Litz, we wanted to implement the membership functions i
 
  
 \bibliography{GFL.bib}
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
+\nocite{*}
 \end{document}
