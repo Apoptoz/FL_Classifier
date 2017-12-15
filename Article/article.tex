@@ -1,9 +1,6 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{amsmath}
 \usepackage{hyperref}
-\usepackage{graphicx}
-\graphicspath{ {img/} }
-
 \hypersetup{
 	urlcolor=red,
 	linkcolor=red,
@@ -20,23 +17,25 @@
 
 \section{Introduction}
 
-Usually, fuzzy systems are designed by expert. We rely on expert to find the membership values and the rules to design the Knowledge Base.
-However, there might be some cases where the expert is not trustworthy, or there is not expert available or else that a human may not be able to be an expert in our domain. Thus, this essay is trying to explore the use of a computer heuristic to design one part of a fuzzy rule-based classifier, namely Genetic Algorithm (GA).
+Usually, fuzzy systems are designed by an expert. We rely on the expert to find the membership values and the rules to design the Knowledge Base.
+However, there are cases where the expert is not trustworthy, there is no expert available, or a human is not able to be an expert in the problem domain. Thus, this paper is trying to explore the use of a computer heuristic, namely a Genetic Algorithm (GA), to design one part of a fuzzy rule-based classifier.
 
-GA is proven to be a good on optimization problems. They can search through complex spaces efficiently. Moreover, the fitness function let us implement some biases or preferences.
+GAs are proven to be good on optimization problems. They can search through complex spaces efficiently. Moreover, the fitness function lets us implement some biases or preferences.
 
-The goal of this project is to implement a rule based classification system using both genetic algorithm and fuzzy logic.
-We expect our algorithm to find rule set that satisfies two objectives : accuracy \& simplicity.
-We want a rule set that classifies correctly our dataset, but also have simple and human-interpretable rules. 
+The goal of this project is to implement a rule based classification system using both a genetic algorithm and fuzzy logic.
+We expect our algorithm to find a rule set that satisfies two objectives : accuracy \& simplicity.
+We want a rule set that correctly classifies our dataset, but also has simple and human-interpretable rules.
 
-This work is inspired by the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) based on the Iris data. This dataset is a well known classification data with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width,and classes are Iris Setosa, Iris Verticolor and Iris Virginica. \\
+This work is inspired by the classifier presented by Xiong, N., and Lothar Litz. in \textit{“Generating Linguistic Fuzzy Rules for Pattern Classification with Genetic Algorithms.”} (1999) based on the Iris dataset. This dataset is a well known classification dataset with four attributes and 3 classes. The attributes are Sepal Length, Sepal Width, Petal Length and Petal Width, and the classes are Iris Setosa, Iris Verticolor and Iris Virginica. \\
+
+(Do we have to do section X is for Y,....)
 
 \section{Fuzzy Logic}
 
 Fuzzy Logic is a theory to deal with uncertainty.
 Zadeh introduced fuzzy set theory in 1965. Usually logic is seen with a Boolean approach. Is a whale a fish? Yes or no, there is no in between. This is what we call a \textit{crisp set}. Either it belongs to the set, or it's a nonmember. 
 However, fuzzy sets are made to encompass the sometimes uncertain nature of an assertion. An object will belong to a fuzzy set with a certain truth value which is called the \textit{grade of membership}.
-Fuzzy Logic have been applied in a lot of domain, notably in control systems and in artificial intelligence.
+Fuzzy Logic have been applied in a lot of domains, notably in control systems and in artificial intelligence.
 
 
 Fuzzy set is defined by Membership function
@@ -48,9 +47,9 @@ A fuzzy system goes through three processes : fuzzification, inference, and fina
 
 \subsection{Fuzzification}
 
-Fuzzification is the first step of a fuzzy system. It takes crisp input values and turn them into fuzzy values through our membership functions.
-For our classifier. We have designed 3 linguistics variables for each of the parameters, that is in total 12 membership functions.
-The three linguistics variables are SMALL, MEDIUM and LARGE. We decided that they would be the same functions for each of the parameters.
+Fuzzification is the first step of a fuzzy system. It takes crisp input values and turns them into fuzzy values through a membership functions.
+For our classifier, we have designed 3 linguistic variables for each of the parameters. In total, we have 12 membership functions.
+The three linguistics variables are SMALL, MEDIUM and LARGE. We decided to have the same functions for each of the parameters.
 
 (PLOT OF THE THREE FUNCTIONS??)
 
@@ -59,17 +58,17 @@ The three linguistics variables are SMALL, MEDIUM and LARGE. We decided that the
 \subsection{Defuzzification}
 
 
-A fuzzy rulebased system has two components: the Knowledge Base and the Inference System.
+A fuzzy rule-based system has two components: the Knowledge Base and the Inference System.
 
 Knowledge Base : storing the available knowledge in the form of fuzzy rules
-Inference system : applying a fuzzy reasoning methodon the inputs and the KB rules to give a system output.
+Inference system : applying a fuzzy reasoning method on the inputs and the KB rules to give a system output.
 
 
-Knowledge base is usually obtained from expert knowledge, but also by machine learning since the field emerged in the 80s.
+The knowledge base is usually obtained from expert knowledge, but also by machine learning since the field emerged in the 80s.
 
 >Data base:
 Granularity (nb of ling terms/labels)/ var
-Membership functions associated ot the labels
+Membership functions associated to the labels
 >Rule Base: fuzzy rule composition
 
 KB is composed of RB and DB
@@ -87,35 +86,35 @@ Inference System is set up by choosing the fuzzy operator for each component (co
 
 
 \subsection{Classification model for fuzzy rules}
-For each of these attributes $x_{i}(i=1\cdots n)$ there is three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
-Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use that function to express that not all parameters are needed in a rule.
-Thus we can generalise rules as follow :
+For each of these attributes $x_{i}(i=1\cdots n)$ there are three fuzzy sets that are denoted A(i,S), A(i,M), A(i,L), respectively for Small, Medium and Large.
+Let's define \textbf{p} as the mapping function from $\{1\cdots s(s\leq4)\}$ to $\{1\cdots4\}$, with $\forall x\neq y, p(x)\neq p(y)$. We use this function to express that not all parameters are needed in a rule.
+Thus we can generalize rules as follows :
 
 \[if \left( [x_{p(1)}=\bigcup_{j\in D(1)}A(p(1),j) ] \bigcap\cdots\bigcap[x_{p(s)}=\bigcup_{j\in D(s)}A(p(s),j) ] \right) then\quad \bf B \] 
 
 With $D(i)\subseteq\{Small,Medium,Large\}$ \\
 $\bigcup$ corresponds to \textbf{or} and $\bigcap$ to \textbf{and}.\\
-So for exemple, if:
+So for example, if:
 \[D(1)=\{Small\},D(2)=\{Medium,Big\},D(3)=\{\},D(4)=\{Small,Medium,Big\}\]
 Then our rule would read as:
 \begin{center}If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big, then $C_i$.\end{center} 
-There is 12 different membership functions that can be present or not in a rule. If all the functions are absent from the rule, we have an empty fuzzy set for the condition part, which is an invalid rule.\\
-Thus there is $2^{12}-1=4095$ possible rules. The number of rules is exponentially increasing with the number of parameters and linguistic variables. We could have think to encode the resulting class in our rule, but it would have increase the search space. \\ 
+There are 12 different membership functions that can each be present or not in a rule. If all the functions are absent from the rule, we have an empty fuzzy set for the condition part, which is an invalid rule.\\
+Thus there are $2^{12}-1=4095$ possible rules. The number of rules is exponentially increasing with the number of parameters and linguistic variables. We could have encoded the resulting class in our rules, but it would have increased the search space. \\ 
 \\
-Xiong \& Litz proposed a way to compute the classes using the antecedant and the data set: \\
+Xiong \& Litz proposed a way to compute the classes using the antecedent and the data set: \\
 \\
 A rule can be summarised as \textit{If A then B, or $A\Rightarrow B$}.\\
 $B\in \{Class_1,Class_2,Class_3,Class_4\}$\\
 \[A=[x_{p(1)}=\bigcup_{j\in D(1)}A(p(1),j) ] \bigcap\cdots\bigcap[x_{p(s)}=\bigcup_{j\in D(s)}A(p(s),j)]\]
 $\mu_A(u_i)$ is the membership value of an item $u_i(i=1\cdots m)$ from the training set $U_t=\{u_1,\cdots ,u_m\}$ to A.
 %This time B is not C1 or C2.... Should we change ?
-The consequent B is a crisp subset which defines as follow:
+The consequent B is a crisp subset which is defined as follows:
 \[\mu_B(u_i)=
 \begin{cases}
 	1 & \text{if $class(u_i)=B$}\\
 	0 & \text{otherwise}
 \end{cases}\]
-(For the class prediction later, B will be this time a fuzzy subset)\\
+(For the class prediction later, B will be a fuzzy subset)\\
 \\
 $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B will be used to compute the truth value of a rule for each class:
 \[
@@ -129,16 +128,14 @@ $A\Rightarrow B$ is equivalent to $A\subseteq B$, so the subsethood of A in B wi
 		{\sum\limits_{u_i\in U_T}{\mu_A(u_i)}}
 \]
 
-\newpage
-
 \section{Rule Based Genetic Algorithm}
 
 \subsection{Presentation}
 
-There is two type of GA rule based classifier : Pittsburgh approach and the Michigan approach one. Pittsburgh : Each chromosome is a rule set. Michigan : each chromosome is a rule, the system evolve as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
+There are two types of GA rule based classifiers: the Pittsburgh approach and the Michigan approach. Pittsburgh: Each chromosome is a rule set. Michigan: each chromosome is a rule, and the system evolves as a whole. We decided to use the Pittsburgh approach as it was more intuitive for us to build.
 
 
-Genetic Algorithm can be used to various part of a fuzzy system:
+Genetic Algorithms can be used for various parts of a fuzzy system:
 
 Tuning the membership function
 Rule learning
@@ -147,59 +144,53 @@ Learning of Knowledge Base
 Inference parameters
 Etc... (see \url{http://sci2s.ugr.es/sites/default/files/files/TematicWebSites/GeneticFuzzySystems/FUZZ-IEEE09_Tutorial_EMOFRBSs-Ishibuchi-Alcala.pdf})
 
-\begin{figure}
-\centering
-\caption{The genetic fuzzy system we implemented}
-\includegraphics[scale=0.5]{genefuzzy}
-\end{figure}
 \subsection{Modeling the algorithm}
-
-
-\begin{figure}
-\includegraphics[scale=0.5]{genealgo}
-\centering
-\caption{Decomposition of a genetic algorithm}
-\end{figure}
 
 \subsubsection{Individual}
 
-We define an individual as a list of rules. Rules are represented with a list of 12 bits, 3 bits for each parameters.
-These 3 bits express the presence or not of each linguistic variable for D(i), 1 if present, 0 otherwise.
-For exemple the rule presented in section 2 would be represented as [1,0,0,0,1,1,0,0,0,1,1,1].
+We define an individual as a list of rules. Rules are represented with a list of 12 bits, 3 bits for each parameter.
+These 3 bits express the presence or not of each linguistic variable for D(i): 1 if present, 0 otherwise.
+For example, the rule presented in section 2 would be represented as [1,0,0,0,1,1,0,0,0,1,1,1].
 We decided to set 10 rules for each individual.
 
 \subsubsection{Selection and Crossover of individuals}
 
 In genetic algorithms, it's important to avoid a \textbf{premature convergence}, that is when a population converge toward a local extremum rather than the global optimum. \\
 The Tournament Selection is a way to chose a user-selected number of random individuals in a population, and then take the fittest.\\
-It is possible to give a chance to weaker individuals by reducing the number of participing candidates, or in the opposite to prevents weaker ones to breed by increasing the number.
-Two selections gives two individuals that can mate with a crossover.
+It is possible to give a chance to weaker individuals by reducing the number of participating candidates, or in the opposite to prevent weaker ones from breed by increasing the number.
+Two selections give two individuals that can mate with a crossover.
 The idea is to mix the chromosomes of the individuals to produce a child inheriting the genes of his parents.\\
 Many techniques exist to cross two chromosomes. We chose to pick the uniform crossover.\\
-Given two rules, for each bit there is a 0.5 probability to inherit the gene of one of the parent.\\
+Given two rules, for each bit there is a 0.5 probability of inheriting the gene of one of the parent.\\
 We repeat the process for each pair of rules.
 
 \subsubsection{Mutation}
 
-Mutation is a key point in genetic algorithm to explore the problem space by maintaining a problem diversity. Similar to biological mutation, this operator modifies a chromosome in a unpredictable way and can give a better solution.
-In our algorithm, there is a mutation parameter that will give the chance of each gene to flip the bit. Each bit of each rule of an individual will have a probability $p_{mut}$ to be flipped.\\
-If $p_{mut}$ is too high the information given by the chromosome might be lost because it changed too much, and thus the algorithm may never converge. Else if $p_{mut}$ is too low, the exploration space may be restricted and thus the algorithm may converge to a local optimum.
+Mutation is a key point in letting genetic algorithms explore the problem space by maintaining a problem diversity. Similar to biological mutation, this operator modifies a chromosome in a unpredictable way and can give a better solution.
+In our algorithm, there is a mutation parameter that will give the chance of each gene flipping its bit. Each bit of each rule of an individual will have a probability $p_{mut}$ of being flipped.\\
+If $p_{mut}$ is too high, the information given by the chromosome might be lost because it changed too much, and thus the algorithm may never converge. However, if $p_{mut}$ is too low, the exploration space may be restricted and thus the algorithm may converge to a local optimum.
 
-\newpage
+
+\subsection{The fitness function}
+
+According to the law of the fittest, the best individuals have more of a chance of breeding and transmitting their genes. But what does it mean for an individual to be fit?\\
+For this work, we define the fitness function as the accuracy of prediction of an individual given a test dataset.
+
+\section{Implementation}
+
+Optimization : cache individual rule fitnesses\\
+Set of rules : may be rules that are incorrect 
+
+\section{Results and Conclusion}
+
+
+
 
 \section{Compute the fitness function}
 
-According to the law of the fittest, the best individuals have more chance breeding and transmitting their genes. But what does it mean for an individual to be fit?
 The calculation of the fitness function is the core of our implementation.\\
-We will be trying to explain in depth the structure of that function.
-This figure represents how it works:\\
+We will explain in depth the structure of that function.
 
-
-\begin{figure}
-\centering
-\caption{Finding the class confidences}
-\includegraphics[scale=0.3]{fitnessfunct}
-\end{figure}
 \subsection{Vector of best class confidence}
 
 Given a rule, we measure the truth degree of that rule using the formula previously described on our training data for each class.
@@ -215,7 +206,7 @@ C_3:\mu_b^3(r)
 with $C_i$ the class and $\mu_b^i(r)$ the truth degree of that rule $r$ on class $i$.
 \\
 \\
-An Individual is composed by a set of rules, so the function \textit{getConfVect} gives the vector :
+An Individual is composed of a set of rules, so the function \textit{getConfVect} gives the vector :
 \[
 \vec{Conf}=
 \begin{bmatrix}
@@ -224,11 +215,11 @@ C_i^2:\mu_b^i(r_2)\\
 \vdots\\
 C_i^m:\mu_b^i(r_m)\\
 \end{bmatrix} \]
-With $m$ the number of rules. For each rule, we take the maximum $\mu_b$ from \textit{getConf}. This vector represents for each rule fo an individual, what class it fits the better, and with which confidence.
+With $m$ the number of rules. For each rule, we take the maximum $\mu_b$ from \textit{getConf}. This vector represents for each rule of an individual, what class it fits best, and with what confidence.
 
 \subsection{Vector of $\mu_A$, given a data instance and rules}
 
-The next step is to do fuzzy composition on each of the rule, given an instance of data, here $[x_1,x_2,x_3,x_4]$.
+The next step is to do fuzzy composition on each of the rules, given an instance of data, here $[x_1,x_2,x_3,x_4]$.
 
 The function \textit{getMuA} takes two parameters: a data instance and a rule.
 
@@ -247,7 +238,7 @@ max(A(p(s),j),\forall j \in D(s))
     \]
 \textbf{Example:}\\
 \\
-Let take our example rule:
+Lets take our example rule:
 \begin{center}
 If Sepal Length is Small AND Sepal Width is Medium OR Big AND Petal Width is Small OR Medium OR Big
 \end{center}
@@ -270,6 +261,8 @@ max(0,0.24,0.76)
 \end{split}
 \]
 \\
+\begin{center} \rule[1ex]{.5\textwidth}{.5pt} \end{center}
+\newpage
 
 In the same fashion as we did for our confidence vector, we use the function \textit{getMuVect}:
 
@@ -285,9 +278,14 @@ For the k-th piece of data from the test data.
 
 \subsection{Assembling the pieces: predicting a class}
 
-We want now to get the predicted confidence of classes for an instance.\\
+We now want to get the predicted confidence of classes for an instance.\\
 $\vec{Conf}$ gives us the fittest class for each rule, and $\vec{\mu_A}$ its confidence given an instance of data. \\
-For each class, we take the average of $\mu_A$ for every rule that have that class as the highest truth degree:
+There are several ways to compute the class predicted using these vectors.
+\\
+\\
+\textbf{Simple method:}
+\\
+For each class, we take the average of $\mu_A$ for every rule that has that class as the highest truth degree:
 \[
 \text{Predicted Classes Confidence: }
 \begin{pmatrix}
@@ -302,12 +300,16 @@ Here, the class predicted will simply be the maximum average.
 \subsection{Accuracy \& Fitness function}
 
 The accuracy gives us the percentage of well predicted instances of our classification on a test data. We can use only this score as a fitness function.\\
-However, accuracy score is not our only concern : we would like to have the fewest rules as possible, as we want to produce a clear and simple rule system if one exists. So we have to compute a fitness function combining both the accuracy score and the complexity of the ruleset.
-This is where we decided to change our fitness function for his way:
+It seems that using the training data to define the truth degree, then applying the simple method is already a good way to classify.\\
+When taking the average of the average accuracy of 20 populations of 20 randomly generated individuals, we have a 0.77 accuracy.\\
+And when taking the average accuracy of the fittest individual of 20 random populations, we get a 0.96 accuracy.\\
+Decision Tree Classifier is a similar method with crisp rules. The accuracy of that method is 0.92 on the same dataset.\\
+However, the accuracy score is not our only concern : we would like to have the fewest rules as possible, as we want to produce a clear and simple rule system if one exists. So we have to compute a fitness function combining both the accuracy score and the complexity of the rule set.
+This is where we decided to change our fitness function in this way:
 
 \[f_{fitness}=\alpha (Accuracy)+\beta(Simplicity)\]
 
-$\alpha$ and $\beta$ are to weights we can adjust to ask for more accuracy, or for more \textit{Simplicity}.
+$\alpha$ and $\beta$ are the weights we can adjust to ask for more accuracy, or for more \textit{Simplicity}.
 The \textit{Simplicity} is simply measured as one minus the sum of the number of fuzzy sets involved for all the rules of an individual divided by the maximum number of fuzzy sets. 
 For example, if we have two rules :
 \begin{center}[1,0,0,1,1,0,1,1,1,0,0,0] and [0,0,1,0,1,0,0,0,1,1,1,0]
@@ -321,23 +323,22 @@ Then the \textit{Simplicity} would be $1 - \frac{11}{24} \approx 0.54	$
 \section{Conclusion}
 
 Based on the work of Xiong and Litz primarily, but also a lot on the work of Ishibuchi, we implemented a genetic fuzzy classifier on a basic classification task which is the Iris dataset.
-We wanted to investigate how good this kind of classifier can do. Furthermore, fuzzy systems usually rely on expert knowledge. This project is also an experimentation to  see if a heuristic algorithm can "find" by himself a part of the knowledge base of a fuzzy system.
+We wanted to investigate how well this kind of classifier can do. Furthermore, fuzzy systems usually rely on expert knowledge. This project is also an experimentation to see if a heuristic algorithm can "find" by himself a part of the knowledge base of a fuzzy system.
 
-There is a lot of ways to implement genetic algorithm to a fuzzy system. Here, we simply used the genetic algorithm to develop the best rule sets, with two points in mind: accuracy and simplicity.
-By generating and evolving population of rule set, we can see convergences toward good solutions, which both have simple rules and a good accuracy, as we showed in the previous section.
+There are a lot of ways to implement genetic algorithms to a fuzzy system. Here, we simply used the genetic algorithm to develop the best rule sets, with two points in mind: accuracy and simplicity.
+By generating and evolving a population of rule sets, we can see convergences toward good solutions, which both have simple rules and a good accuracy, as we showed in the previous section.
 
-In this view, we proved that a fuzzy genetic algorithm is a good classifier, and gives human-interpretable rules, that other classifiers cannot give Bayesian classifier, KNN or SVM become difficult to understand when the solution dimension is too high.
-Decision tree classifier is a similar classifier than ours, but uses crisp logic. It reveals to be less efficient than our algorithm, but the rules are clear to follow.
+In this view, we proved that a fuzzy genetic algorithm is a good classifier, and gives human-interpretable rules that other classifiers cannot give. Bayesian classifier, KNN or SVM become difficult to understand when the solution dimension is too high.
+Decision tree classifier is a similar classifier to ours, but uses crisp logic. It reveals to be less efficient than our algorithm, but the rules are clear to follow.
 
-The fuzzy genetic system however was really slower than expected, one generation takes around 20 seconds to evolve. We tried to cache the computation of the algorithm to gain more speed, but the result is not flagrant. Furthermore, the dataset we're working on is a fairly small one, as it's composed of only 150 samples, and with 4 attributes. Our algorithm will take exponentially more time with bigger dataset, and with more features. We then doubt that this can be an effective way to classify, except if we have a lot of computation power and a real need to produce human-interpretable rules, which can be a reason as the latest AI algorithms become more and more obscure (black-box effect).
+The fuzzy genetic system however was much slower than expected. One generation takes around 20 seconds to evolve. We tried to cache the computation of the algorithm to gain more speed, but the result is not good. Furthermore, the dataset we're working on is a fairly small one, as it's composed of only 150 samples, each with 4 attributes. Our algorithm will take exponentially more time with bigger datasets, and with more features. We then doubt that this can be an effective way to classify, except if we have a lot of computation power and a real need to produce human-interpretable rules, which can be a reason as the latest AI algorithms become more and more obscure (black-box effect).
 
 We have had other ideas to add to our program, that we sadly did not have time for.
-We wanted to implement a function to create a matlab fuzzy system file, this way we can work on matlab on the knowledge base created by our algorithm.
-Secondly, the confidence level gives us a value for each of the class, we have though to include that to predict all the classes for a given individual. It would be then a Mamdani system, with as an output the confidence of each of the classes.
+We wanted to implement a function to create a matlab fuzzy system file, this way we can work in matlab on the knowledge base created by our algorithm.
+Secondly, the confidence level gives us a value for each of the class, we have thought to include that to predict all the classes for a given individual. It would be then a Mamdani system, with the confidence of each of the classes as an output.
 Lastly, as did Xiong and Litz, we wanted to implement the membership functions into our individuals, and see if it improves the accuracy. It seems quite easy to do it, as we just add 12 numbers into the gene that will match the peak of each membership functions.
 
  
 \bibliography{GFL.bib}
-\bibliographystyle{unsrt}
-\nocite{*}
+\bibliographystyle{plain}
 \end{document}
