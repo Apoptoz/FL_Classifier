@@ -291,10 +291,15 @@ Then the \textit{Simplicity} would be $1 - \frac{11}{24} \approx 0.54	$
 
 \section{Results}
 
+Our genetic algorithm proved to do exceedingly well at developing a set of rules that balanced both accuracy and simplicity. As part of refining our system, we looked at the performance as the number of rules per individual increased. We found in the end that using four or more rules gave a system that could predict our test data with an accuracy of ~95\% or better.
 \begin{center}
 \includegraphics[scale=0.5]{accresult}
 \end{center}
-
+However, we are not only interested in getting accurate results, we also wanted to have rules that are simple and more human interpretable.
+\begin{center}
+\includegraphics[scale=0.5]{simresult.jpg}
+\end{center}
+As shown in the above graph, as the number of rules increase the simplicity of each rule also increases. These two graphs together show the competency of our system to develop accurate and simple rules while also justifying our final choice of 10 rules because it has a high accuracy and high simplicity.
 \section{Conclusion}
 
 Based on the work of Xiong and Litz primarily, but also a lot on the work of Ishibuchi, we implemented a genetic fuzzy classifier on a basic classification task which is the Iris dataset.

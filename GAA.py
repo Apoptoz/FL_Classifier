@@ -37,7 +37,6 @@ class Indiv:
         score = w1*(1.0-acc) + w2*(float(complexity) / float(len(self.rules)*4))
         # this maximizes the accuracy and minimizes "complexity"
         score = -1 * score
-
         
         return score
 
@@ -155,5 +154,6 @@ if __name__ == '__main__':
         pop = newpop
         
         thisFittest = pop.getFittest()
-        print("Fittest accuracy : " + str(classifier.getAccuracy(thisFittest)))
-        print(thisFittest)
+        #print("Fittest accuracy : " + str(classifier.getAccuracy(thisFittest)))
+        #print(thisFittest)
+    print(classifier.calcComplexity(thisFittest))

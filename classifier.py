@@ -15,7 +15,7 @@ WEIGHT_ERROR = 0.2
 
 alpha_cut = 0
 
-nbRules = 10
+nbRules = 9
 
 
 
